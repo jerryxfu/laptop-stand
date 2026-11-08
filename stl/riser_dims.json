@@ -1,0 +1,73 @@
+{
+  "frame_bbox_mm": [
+    242.5,
+    141.1,
+    18.0
+  ],
+  "frame_fits_bed": true,
+  "frame_genus": 2,
+  "frame_pieces": 1,
+  "crossbar_bbox_mm": [
+    208.2,
+    16.0,
+    17.0
+  ],
+  "crossbar_interference_mm3": 0.0,
+  "laptop_interference_mm3": 0.0,
+  "pad_vs_frame_interference_mm3": 0.0,
+  "laptop_pad_overlap_mm3_with_0.05_drop": 83.45,
+  "drop_in_path_clear": true,
+  "shuffle_path_clear": true,
+  "dovetail_flank_angle_deg": 23.2,
+  "frame_spread_play_mm_per_joint": 0.35,
+  "stand_outer_width_mm": 230.8,
+  "stand_depth_mm": 243.4,
+  "rail_rear_height_mm": 141.8,
+  "screen_top_height_mm_lid115": 366.0,
+  "laptop_front_bottom_height_mm": 82.4,
+  "sockets_at_mm": [
+    49.8,
+    174.3
+  ],
+  "solid_volume_cm3": {
+    "frame": 200.5,
+    "crossbar": 55.2,
+    "pad": 1.1
+  },
+  "params": {
+    "laptop_w": 310.8,
+    "laptop_d": 216.3,
+    "laptop_t": 15.0,
+    "laptop_base_t": 10.0,
+    "tilt_deg": 18.0,
+    "front_height": 80.0,
+    "rail_len": 200.0,
+    "rail_inset": 40.0,
+    "frame_t": 18.0,
+    "lip_h": 8.0,
+    "lip_t": 6.0,
+    "rail_depth": 14.0,
+    "base_h": 20.0,
+    "post_w": 16.0,
+    "brace_w": 16.0,
+    "strut_w": 12.0,
+    "strut_at": 0.55,
+    "rear_ext": 45.0,
+    "outer_r": 2.5,
+    "window_r": 8.0,
+    "chamfer": 0.6,
+    "pad_l": 40.0,
+    "pad_w": 12.0,
+    "pad_t": 2.4,
+    "pocket_depth": 1.2,
+    "pocket_clear": 0.1,
+    "cb_depth": 16.0,
+    "sock_floor": 3.0,
+    "dt_neck": 8.0,
+    "dt_base": 14.0,
+    "dt_depth": 7.0,
+    "fit_side": 0.15,
+    "fit_end": 0.3,
+    "fit_shoulder": 0.1
+  }
+}
