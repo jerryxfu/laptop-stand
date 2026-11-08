@@ -438,7 +438,7 @@ def run_checks(r):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--preset", default="default", choices=list(PRESETS))
-    ap.add_argument("--out", default="stl")
+    ap.add_argument("--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "stl"))
     ap.add_argument("--set", nargs="*", default=[], help="override, e.g. tilt_deg=15")
     a = ap.parse_args()
     over = dict(PRESETS[a.preset])

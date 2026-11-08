@@ -27,6 +27,8 @@ A riser with two side frames, two crossbars and TPU pads, sized for the MacBook 
 | `stl/fit_test_*.stl` | Fit-test socket block and tenon stub | PETG | 1 each |
 | `macbook_riser.py` | Parametric generator. It rebuilds every STL and re-runs the fit checks. | | |
 | `render_preview.py` | Rebuilds the images in `preview/` | | |
+| `tools/slice_bambu.py` | Re-slices `stl/` into the `bambu/` projects using the Bambu Studio command line | | |
+| `CLAUDE.md` | Design notes, gotchas and open work, for picking the project up in a new session | | |
 
 The project files were sliced with the **Bambu PETG HF** and **Bambu TPU 90A** presets. If your spool is PETG Basic, switch the filament preset in Bambu Studio and re-slice. Nothing else needs to change.
 
@@ -49,8 +51,8 @@ The project files were sliced with the **Bambu PETG HF** and **Bambu TPU 90A** p
 
 1. Print `fit_test_PETG.3mf` and one TPU pad.
 2. **Dovetail:** the tenon stub should drop into the socket with light-to-firm hand pressure, with no wobble.
-   - Too tight: `python3 macbook_riser.py --set fit_side=0.2`
-   - Too loose: `python3 macbook_riser.py --set fit_side=0.1`
+   - Too tight: `make stl ARGS="--set fit_side=0.2"`, then `make slice`
+   - Too loose: `make stl ARGS="--set fit_side=0.1"`, then `make slice`
 3. **Pad:** it should press into the pocket snugly and stand about 1.2 mm proud. If it's loose, use a dot of CA glue or a small piece of thin double-sided tape.
 
 ## Assembly
@@ -67,19 +69,40 @@ The dovetails stop the frames from spreading apart. Gravity and the laptop keep 
 - The lip stands 6.8 mm above the pads. It catches the front edge without reaching the palm rest.
 - The rear feet reach 45 mm behind the rail to resist tipping when you tap the touchscreen. A tap needs roughly 4 N (~400 g) at the top of the screen to start tipping it. The hinge gives way before that.
 
+## Setup on a new machine
+
+You need Python 3.11 or newer (tested on 3.14). To re-slice, you also need [Bambu Studio](https://bambulab.com/en/download/studio) installed in `/Applications` (tested with 02.08.02.61).
+
+```bash
+git clone https://github.com/jerryxfu/laptop-stand.git
+```
+
+```bash
+cd laptop-stand && make setup
+```
+
+`make setup` creates a `.venv` folder and installs `requirements.txt` into it. After that, every `make` command uses that environment automatically.
+
 ## Changing the shape
 
 ```bash
-python3 macbook_riser.py                    # default (18°, ~82 mm front)
-python3 macbook_riser.py --preset tall      # 20°, ~112 mm front, screen top ~403 mm
-python3 macbook_riser.py --preset low       # 12°, ~57 mm front, screen top ~316 mm
-python3 macbook_riser.py --set tilt_deg=15 front_height=90
-python3 render_preview.py                   # refresh preview images
+make stl                                      # default (18°, ~82 mm front)
+make stl ARGS="--preset tall"                 # 20°, ~112 mm front, screen top ~403 mm
+make stl ARGS="--preset low"                  # 12°, ~57 mm front, screen top ~316 mm
+make stl ARGS="--set tilt_deg=15 front_height=90"
+make preview                                  # refresh images (uses the last stl settings)
+make slice                                    # refresh the bambu/ projects
+make all                                      # stl + preview + slice
 ```
 
-Every run checks that the frame fits the 256 mm bed, that the laptop and crossbars don't collide with the frames, and that the crossbars can still be dropped in. It prints a warning if any of those fail. The minimum front height is about 55 mm, because the crossbar joints need room above the base bar.
+Every `make stl` checks that the frame fits the 256 mm bed, that the laptop and crossbars don't collide with the frames, and that the crossbars can still be dropped in. It prints a warning if any of those fail. The minimum front height is about 55 mm, because the crossbar joints need room above the base bar.
 
-Needs `pip install manifold3d shapely trimesh numpy` (and `pyvista matplotlib` for the previews).
+`make slice` uses PETG HF by default. For PETG Basic, run `python3 tools/slice_bambu.py --petg basic` instead.
+
+## Status
+- Nothing printed yet (the laptop is still shipping). Print the fit test first.
+- Planned: seat the laptop on its own rubber feet instead of the TPU rail pads (needs the feet measured once the laptop arrives), and raise the crossbars further off the desk. Details are in [CLAUDE.md](CLAUDE.md).
+- No license chosen yet.
 
 ## Dimension source
 The PROLED model's size is from [MacRumors](https://www.macrumors.com/2026/10/28/oled-macbook-pro-size-weight/) (12.24 × 8.52 × 0.59 in). The design isn't sensitive to a millimetre or two either way.

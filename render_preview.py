@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Render preview PNGs of the riser (assembly, exploded, side view, plates)."""
+import json
 import math
 import os
 import sys
@@ -8,60 +9,26 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
-from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-from shapely.geometry import Polygon
 
 from macbook_riser import BED, Riser, to_tm
 
-OUT = sys.argv[1] if len(sys.argv) > 1 else "preview"
+HERE = os.path.dirname(os.path.abspath(__file__))
+OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "preview")
 os.makedirs(OUT, exist_ok=True)
 
 PETG = np.array([0.20, 0.42, 0.62])
 TPU = np.array([0.12, 0.12, 0.13])
 LAP = np.array([0.72, 0.73, 0.76])
-LIGHT = np.array([-0.35, -0.55, 0.75])
-LIGHT = LIGHT / np.linalg.norm(LIGHT)
 
-
-def faces(m, color, alpha=1.0):
-    tm = to_tm(m)
-    tri = tm.vertices[tm.faces]
-    nrm = tm.face_normals
-    shade = 0.38 + 0.62 * np.clip(nrm @ LIGHT, 0, 1)
-    cols = np.clip(color[None, :] * shade[:, None] + 0.04, 0, 1)
-    rgba = np.concatenate([cols, np.full((len(cols), 1), alpha)], axis=1)
-    return tri, rgba
-
-
-def draw(ax, items, elev, azim, pad=10):
-    tris, cols = [], []
-    for m, c, a in items:
-        t, col = faces(m, c, a)
-        tris.append(t)
-        cols.append(col)
-    T = np.concatenate(tris)
-    C = np.concatenate(cols)
-    pc = Poly3DCollection(T, facecolors=C, edgecolors="none", linewidths=0)
-    ax.add_collection3d(pc)
-    lo, hi = T.reshape(-1, 3).min(0), T.reshape(-1, 3).max(0)
-    ctr = (lo + hi) / 2
-    span = (hi - lo).max() / 2 + pad
-    ax.set_xlim(ctr[0] - span, ctr[0] + span)
-    ax.set_ylim(ctr[1] - span, ctr[1] + span)
-    ax.set_zlim(ctr[2] - span, ctr[2] + span)
-    ax.set_box_aspect((1, 1, 1))
-    ax.view_init(elev=elev, azim=azim)
-    ax.set_axis_off()
-
-
-def fig3d(size=(10, 8)):
-    fig = plt.figure(figsize=size, dpi=110)
-    ax = fig.add_axes([0, 0, 1, 1], projection="3d")
-    ax.computed_zorder = False
-    return fig, ax
-
-
-r = Riser()
+# Render the same shape as the last `macbook_riser.py` run (it saves its
+# parameters to stl/riser_dims.json), so --preset / --set carry through.
+DIMS = os.path.join(HERE, "stl", "riser_dims.json")
+try:
+    with open(DIMS) as f:
+        params = json.load(f)["params"]
+except (OSError, KeyError, ValueError):
+    params = {}
+r = Riser(**params)
 asm = r.assembly()
 p = r.p
 
